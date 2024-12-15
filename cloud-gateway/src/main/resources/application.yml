@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  #redis:
+  #host: localhost
+  #port: 6379
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: STUDENT-SERVICE
+          uri: lb://STUDENT-SERVICE
+          predicates:
+            - Path=/student/**
+              #filters:
+              #- name: RequestRateLimiter
+              #args:
+              #key-resolver: '#{@remoteAddressResolver}'
+              #redis-rate-limiter.replenishRate: 5 # 5 requisições por segundo
+            #redis-rate-limiter.burstCapacity: 10 # Até 10 requisições no burst
+        - id: SCHOOL-SERVICE
+          uri: lb://SCHOOL-SERVICE
+          predicates:
+            - Path=/school/**
+              #filters:
+              #- name: RequestRateLimiter
+              #args:
+              #key-resolver: '#{@remoteAddressResolver}'
+              #redis-rate-limiter.replenishRate: 50 # 5 requisições por segundo
+            #redis-rate-limiter.burstCapacity: 100 # Até 10 requisições no burst
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
